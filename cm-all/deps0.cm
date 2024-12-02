@@ -1,0 +1,9 @@
+group
+  library($/smlnj-lib.cm) - (
+    signature DYNAMIC_ARRAY
+    functor DynamicArrayFn
+    signature MONO_DYNAMIC_ARRAY
+    structure DynamicArray
+  )
+is
+  $/smlnj-lib.cm

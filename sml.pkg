@@ -1,0 +1,5 @@
+require {
+  github.com/DarinM223/generic 0.0.8 #b0c238994db703fb7260bcfaec392c98f1237ea1
+  github.com/DarinM223/mlton-vector 0.0.2 #83656171d89150336a18ef4448da06f96458e235
+  github.com/DarinM223/dynamic-array 0.0.1 #b08a5de1aee157487d7420d76f826b642a3fbd1e
+}

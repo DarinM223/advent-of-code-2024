@@ -1,0 +1,8 @@
+Group is
+  ./cm-all/deps0.cm
+  ./lib/github.com/DarinM223/extended-basis/basis.cm
+  ./lib/github.com/DarinM223/generic/lib-all.cm
+  ./lib/github.com/DarinM223/dynamic-array/dynamic-array.cm
+  ./lib/github.com/DarinM223/mlton-vector/mlton-vector.cm
+  utils.sml
+  day1.sml
