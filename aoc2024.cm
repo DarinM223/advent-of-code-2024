@@ -6,3 +6,4 @@ Group is
   ./lib/github.com/DarinM223/mlton-vector/mlton-vector.cm
   utils.sml
   day1.sml
+  day2.sml

@@ -41,8 +41,9 @@ struct
     List.foldl (fn (e, acc) => acc + e * lookup e) 0 leftList
 
   fun results () =
-    ( print ("Part 1: " ^ Int.toString totalDistance ^ "\n")
+    ( print ("Part 1 total distance: " ^ Int.toString totalDistance ^ "\n")
     ; print
-        ("Total similarity score: " ^ Int.toString totalSimilarityScore ^ "\n")
+        ("Part 2 total similarity score: " ^ Int.toString totalSimilarityScore
+         ^ "\n")
     )
 end

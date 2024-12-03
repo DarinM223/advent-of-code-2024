@@ -6,3 +6,4 @@ $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
 ./lib/github.com/DarinM223/mlton-vector/mlton-vector.mlb
 utils.sml
 day1.sml
+day2.sml
