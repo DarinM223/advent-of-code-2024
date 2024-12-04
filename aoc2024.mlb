@@ -7,3 +7,4 @@ $(SML_LIB)/smlnj-lib/Util/smlnj-lib.mlb
 utils.sml
 day1.sml
 day2.sml
+day3.sml
