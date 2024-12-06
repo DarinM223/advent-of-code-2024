@@ -1,5 +1,13 @@
 structure Utils =
 struct
+  val trim =
+    let
+      fun trim ch = ch = #" " orelse ch = #"\n"
+    in
+      Substring.string o Substring.dropr trim o Substring.dropl trim
+      o Substring.full
+    end
+
   fun readLines (f: string -> unit) (path: string) =
     let
       val ins = TextIO.openIn path
@@ -10,13 +18,15 @@ struct
     in
       loop ins
     end
-
-  val trim =
+  fun readLinesTrimmed (f: string -> unit) (path: string) =
     let
-      fun trim ch = ch = #" " orelse ch = #"\n"
+      val ins = TextIO.openIn path
+      fun loop ins =
+        case TextIO.inputLine ins of
+          SOME line => (f (trim line); loop ins)
+        | NONE => ()
     in
-      Substring.string o Substring.dropr trim o Substring.dropl trim
-      o Substring.full
+      loop ins
     end
 
   val words = String.tokens (fn ch => ch = #" ")

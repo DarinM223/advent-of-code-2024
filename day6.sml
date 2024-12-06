@@ -4,7 +4,7 @@ struct
     let
       val grid: char array list ref = ref []
     in
-      Utils.readLines
+      Utils.readLinesTrimmed
         (fn line => grid := Array.fromList (String.explode line) :: !grid)
         "inputs/day6.txt";
       Array.fromList (List.rev (!grid))
