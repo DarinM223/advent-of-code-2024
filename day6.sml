@@ -47,13 +47,13 @@ struct
     | hitObstacle DOWN = LEFT
     | hitObstacle LEFT = UP
 
-  fun inGrid grid (y, x) : bool =
-    y >= 0 andalso y < Array.length grid andalso x >= 0
-    andalso x < Array.length (Array.sub (grid, y))
-
   infix 5 !
   fun op! (grid, (y, x)) =
     Array.sub (Array.sub (grid, y), x)
+
+  fun inGrid grid (y, x) : bool =
+    y >= 0 andalso y < Array.length grid andalso x >= 0
+    andalso x < Array.length (Array.sub (grid, y))
 
   type pos = int * int
   val showPos = fn (t0, t1) =>
@@ -72,6 +72,9 @@ struct
      | ? => ?)
 
   structure PosSet = RedBlackSetFn (type ord_key = pos val compare = comparePos)
+  structure PosDirectionSet =
+    RedBlackSetFn
+      (type ord_key = posAndDirection val compare = comparePosAndDirection)
 
   fun foldSimulation (grid: char array array) (initPos: pos)
     (initDirection: direction) (f: pos -> direction -> 'a -> 'a) (initState: 'a) :
@@ -95,51 +98,38 @@ struct
 
   fun go pos _ set =
     if PosSet.member (set, pos) then set else PosSet.add (set, pos)
-  val part1 = PosSet.numItems
+  val path = PosSet.listItems
     (foldSimulation grid (guardPosition grid) UP go PosSet.empty)
-
-  structure PosDirectionSet =
-    RedBlackSetFn
-      (type ord_key = posAndDirection val compare = comparePosAndDirection)
+  val part1 = List.length path
 
   fun setGridChar grid (y, x) ch =
-    let val subarr = Array.sub (grid, y)
-    in Array.update (subarr, x, ch)
-    end
+    Array.update (Array.sub (grid, y), x, ch)
 
-  fun findLoops grid startingPos pos direction addedObstacles =
+  (* For every position the guard visits, attempt to place an obstacle there and see
+     if the guard loops *)
+  fun findLoops grid startingPos (pos, addedObstacles) =
     let
-      val nextPos = move pos direction
+      exception Success
+      val oldCh = grid ! pos
+      val () = setGridChar grid pos #"#"
+      fun findCycle pos direction set =
+        if PosDirectionSet.member (set, (pos, direction)) then raise Success
+        else PosDirectionSet.add (set, (pos, direction))
+      (* To check for cycles you have to start from the starting position, attempting to
+         start at one of the traversed positions will cause overcounting of loops *)
+      val canAddObstacle =
+        ( foldSimulation grid startingPos UP findCycle PosDirectionSet.empty
+        ; false
+        )
+        handle Success => true
+      val () = setGridChar grid pos oldCh
     in
-      if
-        not (inGrid grid nextPos) orelse nextPos = startingPos
-        orelse grid ! nextPos = #"#"
-      then
-        addedObstacles
-      else
-        let
-          exception Success
-          val oldCh = grid ! nextPos
-          val () = setGridChar grid nextPos #"#"
-          fun findCycle pos direction set =
-            if PosDirectionSet.member (set, (pos, direction)) then raise Success
-            else PosDirectionSet.add (set, (pos, direction))
-          val canAddObstacle =
-            ( foldSimulation grid pos direction findCycle PosDirectionSet.empty
-            ; false
-            )
-            handle Success => true
-          val () = setGridChar grid nextPos oldCh
-        in
-          if canAddObstacle then PosSet.add (addedObstacles, nextPos)
-          else addedObstacles
-        end
+      if canAddObstacle then PosSet.add (addedObstacles, pos)
+      else addedObstacles
     end
 
-  (* Needs to be 1796 *)
   val part2 = PosSet.numItems
-    (foldSimulation grid (guardPosition grid) UP
-       (findLoops grid (guardPosition grid)) PosSet.empty)
+    (List.foldl (findLoops grid (guardPosition grid)) PosSet.empty path)
 
   val sampleGrid = Array.fromList (List.map (Array.fromList o String.explode)
     [ "....#....."
@@ -153,8 +143,13 @@ struct
     , "#........."
     , "......#..."
     ])
-  val samplepart2 = PosSet.listItems
-    (foldSimulation sampleGrid (guardPosition sampleGrid) UP
-       (findLoops sampleGrid (guardPosition sampleGrid)) PosSet.empty)
 
+  fun results () =
+    ( print
+        ("Part 1 number of positions the guard visits: " ^ Int.toString part1
+         ^ "\n")
+    ; print
+        ("Part 2 number of obstacles that create loops: " ^ Int.toString part2
+         ^ "\n")
+    )
 end

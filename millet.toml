@@ -3,3 +3,4 @@ version = 1
 root = "aoc2024.mlb"
 [diagnostics]
 5043.severity = "ignore"
+5034.severity = "ignore"
