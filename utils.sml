@@ -33,4 +33,19 @@ struct
 
   fun printList (show: 'a -> string) (l: 'a list) =
     List.app (fn e => print (show e ^ "\n")) l
+
+  fun memoize (hash: 'a -> word, sameKey: 'a * 'a -> bool)
+    (f: ('a -> 'b) -> 'a -> 'b) : 'a -> 'b =
+    let
+      exception NotFound
+      val cache: ('a, 'b) HashTable.hash_table =
+        HashTable.mkTable (hash, sameKey) (1000, NotFound)
+      fun g x =
+        HashTable.lookup cache x
+        handle NotFound => let val result = f g x
+                           in HashTable.insert cache (x, result); result
+                           end
+    in
+      g
+    end
 end
